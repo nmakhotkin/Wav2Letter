@@ -10,18 +10,19 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from Wav2Letter.model import Wav2Letter
+from Wav2Letter.dataset import ImageCommand
 from Wav2Letter.data import GoogleSpeechCommand
 from Wav2Letter.decoder import GreedyDecoder
 
 
-def train(batch_size, epochs):
+def train(batch_size, epochs, data_dir):
     # load saved numpy arrays for google speech command
-    gs = GoogleSpeechCommand()
-    _inputs, _targets = gs.load_vectors("./speech_data")
+    gs = ImageCommand(data_dir)
+    _inputs, _targets = gs.load_vectors()
 
-    # paramters
-    batch_size = batch_size
-    mfcc_features = 13
+    # parameters
+    # batch_size = batch_size
+    mfcc_features = 3
     grapheme_count = gs.intencode.grapheme_count
 
     print("training google speech dataset")
@@ -68,11 +69,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Wav2Letter')
     parser.add_argument('--batch-size', type=int, default=64, metavar='N',
                         help='input batch size for training (default: 64)')
-    parser.add_argument('--epochs', type=int, default=100, metavar='N',
+    parser.add_argument('--epochs', type=int, default=10, metavar='N',
                         help='total epochs (default: 100)')
+    parser.add_argument('--data-dir', default='', required=True,
+                        help='Data directory path containing tfrecords')
 
     args = parser.parse_args()
 
-    batch_size = args.batch_size
     epochs = args.epochs
-    train(batch_size, epochs)
+    train(args.batch_size, epochs, args.data_dir)

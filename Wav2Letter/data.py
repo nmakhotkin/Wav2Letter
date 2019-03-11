@@ -13,6 +13,16 @@ import random
 import pickle
 
 
+chars = [
+    '-', 'pad', '!', '"', '#', '$', '%', "'", '(', ')', '+', ',', '.', '/',
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<', '=',
+    '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
+    'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+    '[', '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+    'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '|'
+]
+
+
 class IntegerEncode:
     """Encodes labels into integers
     
@@ -20,19 +30,16 @@ class IntegerEncode:
         labels (list): shape (n_samples, strings)
     """
 
-    def __init__(self, labels):
+    def __init__(self):
         # reserve 0 for blank label
-        self.char2index = {
-            "-": 0,
-            "pad":1
-        }
-        self.index2char = {
-            0: "-",
-            1: "pad"
-        }
-        self.grapheme_count = 2
-        self.process(labels)
-        self.max_label_seq = 6
+        self.char2index = {}
+        self.index2char = {}
+        for i, ch in enumerate(chars):
+            self.char2index[ch] = i
+            self.index2char[i] = ch
+
+        self.grapheme_count = len(chars)
+        self.max_label_seq = 30
 
     def process(self, labels):
         """builds the encoding values for labels
@@ -40,6 +47,12 @@ class IntegerEncode:
         Args:
             labels (list): shape (n_samples, strings)
         """
+        # lengths = np.zeros([len(labels)])
+        # for i, l in enumerate(labels):
+        #     lengths[i] = len(l)
+        #
+        # self.max_label_seq = int(np.max(lengths))
+
         strings = "".join(labels)
         for s in strings:
             if s not in self.char2index:
